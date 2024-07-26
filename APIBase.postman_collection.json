@@ -1,150 +1,217 @@
 {
-    "info": {
-      "name": "APIBase",
-      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  "info": {
+    "name": "APIBase",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"username\": \"johndoe\",\n  \"email\": \"johndoe@example.com\",\n  \"password\": \"password123\",\n  \"confirmPassword\": \"password123\",\n  \"role\": \"user\",\n  \"profilePicture\": \"http://example.com/profile.jpg\",\n  \"bio\": \"This is a sample bio\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/users/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5001",
+          "path": [
+            "api",
+            "users",
+            "register"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const response = pm.response.json();",
+              "  pm.environment.set(\"userId\", response._id);",
+              "} else {",
+              "  console.log('Failed to register user');",
+              "}"
+            ]
+          }
+        }
+      ]
     },
-    "item": [
-      {
-        "name": "Register User",
-        "request": {
-          "method": "POST",
-          "header": [
-            {
-              "key": "Content-Type",
-              "value": "application/json",
-              "type": "text"
-            }
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"johndoe@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/users/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
           ],
-          "body": {
-            "mode": "raw",
-            "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"johndoe@example.com\",\n  \"password\": \"password123\"\n}"
+          "port": "5001",
+          "path": [
+            "api",
+            "users",
+            "login"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const response = pm.response.json();",
+              "  pm.environment.set(\"token\", response.token);",
+              "  pm.environment.set(\"userId\", response.user._id);",
+              "} else {",
+              "  console.log('Failed to log in');",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get User by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5001/api/users/{{userId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5001",
+          "path": [
+            "api",
+            "users",
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Users",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5001/api/users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5001",
+          "path": [
+            "api",
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update User",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           },
-          "url": {
-            "raw": "http://localhost:5000/api/users/register",
-            "protocol": "http",
-            "host": ["localhost"],
-            "port": "5000",
-            "path": ["api", "users", "register"]
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
           }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Updated\",\n  \"username\": \"johnupdated\",\n  \"email\": \"johnupdated@example.com\",\n  \"password\": \"newpassword123\",\n  \"role\": \"admin\",\n  \"profilePicture\": \"http://example.com/profile_updated.jpg\",\n  \"status\": \"active\",\n  \"bio\": \"This is an updated bio\"\n}"
         },
-        "response": []
-      },
-      {
-        "name": "Login User",
-        "request": {
-          "method": "POST",
-          "header": [
-            {
-              "key": "Content-Type",
-              "value": "application/json",
-              "type": "text"
-            }
+        "url": {
+          "raw": "http://localhost:5001/api/users/{{userId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
           ],
-          "body": {
-            "mode": "raw",
-            "raw": "{\n  \"email\": \"johndoe@example.com\",\n  \"password\": \"password123\"\n}"
-          },
-          "url": {
-            "raw": "http://localhost:5000/api/users/login",
-            "protocol": "http",
-            "host": ["localhost"],
-            "port": "5000",
-            "path": ["api", "users", "login"]
-          }
-        },
-        "response": []
+          "port": "5001",
+          "path": [
+            "api",
+            "users",
+            "{{userId}}"
+          ]
+        }
       },
-      {
-        "name": "Get All Users",
-        "request": {
-          "method": "GET",
-          "header": [],
-          "url": {
-            "raw": "http://localhost:5000/api/users",
-            "protocol": "http",
-            "host": ["localhost"],
-            "port": "5000",
-            "path": ["api", "users"]
+      "response": []
+    },
+    {
+      "name": "Delete User",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
           }
-        },
-        "response": []
-      },
-      {
-        "name": "Get User by ID",
-        "request": {
-          "method": "GET",
-          "header": [],
-          "url": {
-            "raw": "http://localhost:5000/api/users/:id",
-            "protocol": "http",
-            "host": ["localhost"],
-            "port": "5000",
-            "path": ["api", "users", ":id"]
-          }
-        },
-        "response": []
-      },
-      {
-        "name": "Update User",
-        "request": {
-          "method": "PUT",
-          "header": [
-            {
-              "key": "Content-Type",
-              "value": "application/json",
-              "type": "text"
-            }
+        ],
+        "url": {
+          "raw": "http://localhost:5001/api/users/{{userId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
           ],
-          "body": {
-            "mode": "raw",
-            "raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"johnupdated@example.com\",\n  \"password\": \"newpassword123\"\n}"
-          },
-          "url": {
-            "raw": "http://localhost:5000/api/users/:id",
-            "protocol": "http",
-            "host": ["localhost"],
-            "port": "5000",
-            "path": ["api", "users", ":id"]
-          }
-        },
-        "response": []
+          "port": "5001",
+          "path": [
+            "api",
+            "users",
+            "{{userId}}"
+          ]
+        }
       },
-      {
-        "name": "Delete User",
-        "request": {
-          "method": "DELETE",
-          "header": [],
-          "url": {
-            "raw": "http://localhost:5000/api/users/:id",
-            "protocol": "http",
-            "host": ["localhost"],
-            "port": "5000",
-            "path": ["api", "users", ":id"]
-          }
-        },
-        "response": []
-      },
-      {
-        "name": "Protected Route",
-        "request": {
-          "method": "GET",
-          "header": [
-            {
-              "key": "Authorization",
-              "value": "Bearer {{token}}",
-              "type": "text"
-            }
-          ],
-          "url": {
-            "raw": "http://localhost:5000/api/protected",
-            "protocol": "http",
-            "host": ["localhost"],
-            "port": "5000",
-            "path": ["api", "protected"]
-          }
-        },
-        "response": []
-      }
-    ]
-  }
-  
+      "response": []
+    }
+  ]
+}
