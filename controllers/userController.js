@@ -32,7 +32,7 @@ exports.register = async (req, res) => {
   } catch (error) {
     if (error.code === 11000) {
       logger.warn(
-        `User registration failed - duplicate email or username: ${email}`
+        `User registration failed - duplicate email or username: ${req.body.email}`
       );
       res.status(400).json({ error: "Email or Username already exists" });
     } else {
