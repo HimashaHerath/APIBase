@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
+const productRoutes = require('./routes/productRoutes');
 const errorHandler = require("./middlewares/errorHandler");
 const apiLimiter = require("./utils/rateLimiter");
 
@@ -15,6 +16,7 @@ connectDB();
 
 app.use("/api/", apiLimiter);
 app.use("/api/users", userRoutes);
+app.use('/api/products', productRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
