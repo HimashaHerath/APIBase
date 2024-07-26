@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const logger = require("../utils/logger");
 
 exports.register = async (req, res) => {
   try {
@@ -26,11 +27,16 @@ exports.register = async (req, res) => {
     });
     await newUser.save();
     newUser.password = undefined;
+    logger.info(`User registered: ${newUser._id}`);
     res.status(201).json(newUser);
   } catch (error) {
     if (error.code === 11000) {
+      logger.warn(
+        `User registration failed - duplicate email or username: ${email}`
+      );
       res.status(400).json({ error: "Email or Username already exists" });
     } else {
+      logger.error(`User registration failed: ${error.message}`);
       res.status(500).json({ error: error.message });
     }
   }
@@ -40,10 +46,16 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) {
+      logger.warn(`Login failed - user not found: ${email}`);
+      return res.status(404).json({ error: "User not found" });
+    }
 
     const isMatch = await user.correctPassword(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
+    if (!isMatch) {
+      logger.warn(`Login failed - invalid credentials: ${email}`);
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
 
     const token = jwt.sign(
       { id: user._id, email: user.email },
@@ -52,8 +64,10 @@ exports.login = async (req, res) => {
     );
 
     user.password = undefined;
+    logger.info(`User logged in: ${user._id}`);
     res.status(200).json({ message: "Login successful", token, user });
   } catch (error) {
+    logger.error(`Login failed: ${error.message}`);
     res.status(500).json({ error: error.message });
   }
 };
@@ -61,9 +75,14 @@ exports.login = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) {
+      logger.warn(`Get user failed - user not found: ${req.params.id}`);
+      return res.status(404).json({ error: "User not found" });
+    }
+    logger.info(`User retrieved: ${user._id}`);
     res.status(200).json(user);
   } catch (error) {
+    logger.error(`Get user failed: ${error.message}`);
     res.status(500).json({ error: error.message });
   }
 };
@@ -71,8 +90,10 @@ exports.getUserById = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password");
+    logger.info(`All users retrieved, count: ${users.length}`);
     res.status(200).json(users);
   } catch (error) {
+    logger.error(`Get all users failed: ${error.message}`);
     res.status(500).json({ error: error.message });
   }
 };
@@ -92,7 +113,7 @@ exports.updateUser = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      console.log("User not found");
+      logger.warn(`Update user failed - user not found: ${req.params.id}`);
       return res.status(404).json({ error: "User not found" });
     }
 
@@ -107,12 +128,14 @@ exports.updateUser = async (req, res) => {
 
     await user.save();
     user.password = undefined;
+    logger.info(`User updated: ${user._id}`);
     res.status(200).json(user);
   } catch (error) {
-    console.log("Error:", error);
     if (error.code === 11000) {
+      logger.warn(`Update user failed - duplicate email or username: ${email}`);
       res.status(400).json({ error: "Email or Username already exists" });
     } else {
+      logger.error(`Update user failed: ${error.message}`);
       res.status(500).json({ error: error.message });
     }
   }
@@ -121,9 +144,14 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) {
+      logger.warn(`Delete user failed - user not found: ${req.params.id}`);
+      return res.status(404).json({ error: "User not found" });
+    }
+    logger.info(`User deleted: ${user._id}`);
     res.status(200).json({ message: "User deleted" });
   } catch (error) {
+    logger.error(`Delete user failed: ${error.message}`);
     res.status(500).json({ error: error.message });
   }
 };
