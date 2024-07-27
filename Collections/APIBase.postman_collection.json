@@ -378,6 +378,172 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Create Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user\": \"{{userId}}\",\n  \"products\": [\n    {\n      \"product\": \"{{productId}}\",\n      \"quantity\": 2\n    }\n  ],\n  \"totalAmount\": 200\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5001",
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const response = pm.response.json();",
+              "  pm.environment.set(\"orderId\", response._id);",
+              "} else {",
+              "  console.log('Failed to create order');",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Order by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5001/api/orders/{{orderId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5001",
+          "path": [
+            "api",
+            "orders",
+            "{{orderId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Orders",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5001/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5001",
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Order",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Completed\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/orders/{{orderId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5001",
+          "path": [
+            "api",
+            "orders",
+            "{{orderId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Order",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5001/api/orders/{{orderId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5001",
+          "path": [
+            "api",
+            "orders",
+            "{{orderId}}"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }
